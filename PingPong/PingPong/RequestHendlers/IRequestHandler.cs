@@ -4,7 +4,8 @@ using System.Text;
 
 namespace PingPong.Server.RequestHendlers
 {
-    interface IRequestHandler
+    public interface IRequestHandler
     {
+        public byte[] Handle(string msg);
     }
 }

@@ -4,7 +4,8 @@ using System.Text;
 
 namespace PingPong.Server.Listener
 {
-    interface IListener
+    public interface IListener
     {
+        void StartListening();
     }
 }

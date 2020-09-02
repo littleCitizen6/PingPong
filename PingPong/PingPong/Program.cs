@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PingPong.Server.Runners;
+using System;
 
 namespace PingPong.Server
 {
@@ -6,7 +7,8 @@ namespace PingPong.Server
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Runner runner = new SocketRunner(args[0], int.Parse(args[1]));
+            runner.Run();
         }
     }
 }

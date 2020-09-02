@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PingPong.Server.Connections
 {
-    public interface IConnection
+    public interface IConnection : IDisposable
     {
         public bool IsRunning { get;}
         public void Run();

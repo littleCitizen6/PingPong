@@ -4,7 +4,11 @@ using System.Text;
 
 namespace PingPong.Server.RequestHendlers
 {
-    class MirrorRequestHandler
+    public class MirrorRequestHandler : IRequestHandler
     {
+        public byte[] Handle(string data)
+        {
+            return Encoding.ASCII.GetBytes(data);        
+        }
     }
 }

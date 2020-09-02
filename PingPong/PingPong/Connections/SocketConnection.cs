@@ -40,23 +40,18 @@ namespace PingPong.Server.Connections
                 data = Encoding.ASCII.GetString(bytes, 0, bytesRec);
                 if (data != null)
                 {
-                    Console.WriteLine(data);
+                    Console.WriteLine("Text received : {0}", data);
                     if (data == "exit")
                     {
                         break;
                     }
                     else
                     {
-                        _requestHandler.Handle(data);
+                        _socket.Send(_requestHandler.Handle(data));
                     }
                 }
             }
-
-            Console.WriteLine("Text received : {0}", data);
-
-            byte[] msg = Encoding.ASCII.GetBytes(data); // the implement of the request handler
-            _socket.Send(msg);
         }
     }
-    }
+    
 }

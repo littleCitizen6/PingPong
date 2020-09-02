@@ -1,4 +1,5 @@
 ﻿using PingPong.Server.Connections;
+using PingPong.Server.RequestHendlers;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -15,19 +16,16 @@ namespace PingPong.Server.Listener
         private IPHostEntry _host;
         private IPAddress _ipAddress;
         private IPEndPoint _localEndPoint;
-        public SocketListener() 
+        private IRequestHandler _requestHandler;
+        public SocketListener(string address, int port, IRequestHandler requestHandler) 
         {
-            // Get Host IP Address that is used to establish a connection  
-            // In this case, we get one IP address of localhost that is IP : 127.0.0.1  
-            // If a host has multiple addresses, you will get a list of addresses  
-            _host = Dns.GetHostEntry("localhost");
-            _ipAddress = _host.AddressList[0];
-            _localEndPoint = new IPEndPoint(_ipAddress, 11000);
+            _ipAddress = IPAddress.Parse(address);
+            _localEndPoint = new IPEndPoint(_ipAddress, port);
             _connections = new List<IConnection>();
-            
+            _requestHandler = requestHandler;
         }
 
-        public void StartServer()
+        public void StartListening()
         {
             try
             {
@@ -40,7 +38,7 @@ namespace PingPong.Server.Listener
                     Socket handler = listener.Accept();
                     Task Connect = new Task(() =>
                     {
-                        _connections[FindFirstIndexAvailable()] = new SocketConnection(handler);
+                        _connections[FindFirstIndexAvailable()] = new SocketConnection(handler, _requestHandler);
                         _connections[FindFirstIndexAvailable()].Run();
                         _connections[FindFirstIndexAvailable()].Dispose();
                     });
