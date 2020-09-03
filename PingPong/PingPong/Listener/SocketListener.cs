@@ -2,6 +2,7 @@
 using PingPong.Server.RequestHendlers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,7 +14,6 @@ namespace PingPong.Server.Listener
     {
         const int MAX_CONNECTIONS = 10;
         private List<IConnection> _connections;
-        private IPHostEntry _host;
         private IPAddress _ipAddress;
         private IPEndPoint _localEndPoint;
         private IRequestHandler _requestHandler;
@@ -38,9 +38,17 @@ namespace PingPong.Server.Listener
                     Socket handler = listener.Accept();
                     Task Connect = new Task(() =>
                     {
-                        _connections[FindFirstIndexAvailable()] = new SocketConnection(handler, _requestHandler);
-                        _connections[FindFirstIndexAvailable()].Run();
-                        _connections[FindFirstIndexAvailable()].Dispose();
+                        int index = FindFirstIndexAvailable();
+                        if (index == _connections.Count)
+                        {
+                            _connections.Add(new SocketConnection(handler, _requestHandler));
+                        }
+                        else
+                        {
+                            _connections[index] = new SocketConnection(handler, _requestHandler); // in case there was more then the maximum connection
+                        }
+                        _connections[index].Run();
+                        _connections[index].Dispose();
                     });
                     Connect.Start();
                 }
@@ -56,16 +64,16 @@ namespace PingPong.Server.Listener
 
         private int FindFirstIndexAvailable()
         {
+            if(_connections.Count<MAX_CONNECTIONS)
+            {
+                return _connections.Count;
+            }
             while (true)
             {
-                int i = 0;
-                while(i<MAX_CONNECTIONS)
+                var firstAvailable = _connections.FirstOrDefault(x => !x.IsRunning);
+                if (firstAvailable != null)
                 {
-                    if(!_connections[i].IsRunning)
-                    {
-                        return i;
-                    }
-                    i++;
+                    return _connections.IndexOf(firstAvailable);
                 }
             }
         }

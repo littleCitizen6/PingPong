@@ -8,7 +8,6 @@ namespace PingPong.Server.Connections
 {
     public class SocketConnection: IConnection
     {
-        private bool _isRunning;
         private Socket _socket;
         private IRequestHandler _requestHandler;
         public SocketConnection(Socket socket, IRequestHandler requestHandler)
