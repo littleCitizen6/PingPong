@@ -24,7 +24,21 @@ namespace PingPong.Server.Connections
 
         public void Run()
         {
-            
+            Byte[] bytes = new Byte[256];
+            String data;
+            NetworkStream stream = _client.GetStream();
+
+            int i;
+            while (true)
+            {
+                if ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                {
+                    data = Encoding.ASCII.GetString(bytes, 0, i);
+                    stream.Write(_handler.Handle(data));
+                    Console.WriteLine("Sent: {0}", data);
+                }
+            }
+
         }
     }
 }
